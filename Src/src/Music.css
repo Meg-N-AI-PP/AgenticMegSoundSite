@@ -1,0 +1,1125 @@
+/* ============================================
+   MUSIC PAGE — PHASE 2 STYLES (SPLIT LAYOUT)
+   ============================================ */
+
+/* === MUSIC PAGE LAYOUT === */
+.music-page {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Dynamic album-art background */
+.music-page-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+  animation: bgFadeIn 0.8s ease-out;
+}
+
+.music-page-bg__img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 110%;
+  min-height: 110%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  filter: blur(2px) saturate(1.4) brightness(0.45);
+  transform: translate(-50%, -50%) scale(1.05);
+  transform-origin: center center;
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+}
+
+.music-page-bg__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none;
+}
+
+@keyframes bgFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.music-page-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* === HEADER === */
+.music-page-header {
+  text-align: center;
+  padding: 80px 0 28px;
+}
+
+.music-page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  transition: all var(--transition-medium);
+  text-decoration: none;
+}
+
+.music-page-back:hover {
+  color: var(--accent-cyan);
+  border-color: rgba(0, 229, 255, 0.3);
+  background: rgba(0, 229, 255, 0.08);
+  transform: translateX(-4px);
+}
+
+.music-page-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 10px;
+  letter-spacing: -0.03em;
+  perspective: 500px;
+}
+
+.music-page-title .char {
+  display: inline-block;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.music-page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* Refresh bar — hidden, auto-refresh runs silently */
+.music-refresh-bar { display: none; }
+
+/* === SPLIT LAYOUT === */
+.music-split-layout {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 60px;
+  min-height: calc(100vh - 260px);
+}
+
+.music-split-layout.player-open .music-list-panel {
+  flex: 0 0 55%;
+  max-width: 55%;
+}
+
+.music-list-panel {
+  flex: 1;
+  min-width: 0;
+  transition: flex 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.music-player-panel {
+  flex: 0 0 42%;
+  max-width: 42%;
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+  max-height: calc(100vh - 40px);
+}
+
+/* === MUSIC LIST === */
+.music-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.music-list-count {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.music-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* === LOADING SKELETONS === */
+.music-list-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.music-card-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid transparent;
+}
+
+.skeleton-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeleton-line {
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-title { width: 60%; }
+.skeleton-artist { width: 40%; }
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* === ERROR STATE === */
+.music-list-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.music-retry-btn {
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  background: rgba(0, 229, 255, 0.08);
+  color: var(--accent-cyan);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.music-retry-btn:hover {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+/* === COMPACT MUSIC CARD (horizontal list item) === */
+.music-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.music-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--glass-border);
+  transform: translateX(4px);
+}
+
+.music-card--active {
+  background: rgba(0, 229, 255, 0.06) !important;
+  border-color: rgba(0, 229, 255, 0.2) !important;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.06);
+}
+
+.music-card--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--card-accent, var(--accent-cyan));
+  border-radius: 0 3px 3px 0;
+}
+
+.music-card-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.music-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Equalizer bars for active card */
+.music-card-eq {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  padding-bottom: 10px;
+}
+
+.music-card-eq span {
+  width: 3px;
+  background: var(--accent-cyan);
+  border-radius: 2px;
+  animation: eq-bar 0.6s ease-in-out infinite alternate;
+}
+
+.music-card-eq span:nth-child(1) { height: 12px; animation-delay: 0s; }
+.music-card-eq span:nth-child(2) { height: 18px; animation-delay: 0.15s; }
+.music-card-eq span:nth-child(3) { height: 10px; animation-delay: 0.3s; }
+
+@keyframes eq-bar {
+  0% { transform: scaleY(0.4); }
+  100% { transform: scaleY(1); }
+}
+
+.music-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.music-card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-card--active .music-card-title {
+  color: var(--accent-cyan);
+}
+
+.music-card-artist {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.music-card-genre {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 2px 7px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50px;
+  font-family: var(--font-mono);
+}
+
+.music-card-duration {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* === CARD SUBTLE ANIMATIONS (kept gentle for list items) === */
+@keyframes card-float-up {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+}
+@keyframes card-float-down {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-2px); }
+}
+@keyframes card-sway-left {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-3px); }
+}
+@keyframes card-sway-right {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+@keyframes card-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(0, 229, 255, 0); }
+  50% { box-shadow: 0 0 12px rgba(0, 229, 255, 0.06); }
+}
+@keyframes card-tilt-rock {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(1px); }
+  75% { transform: translateX(-1px); }
+}
+@keyframes card-drift-diagonal {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, -2px); }
+}
+@keyframes card-bounce-soft {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+}
+
+.music-card.anim-float-up { animation: card-float-up 5s ease-in-out infinite; }
+.music-card.anim-float-down { animation: card-float-down 5.5s ease-in-out infinite; }
+.music-card.anim-sway-left { animation: card-sway-left 6s ease-in-out infinite; }
+.music-card.anim-sway-right { animation: card-sway-right 5.8s ease-in-out infinite; }
+.music-card.anim-pulse-glow { animation: card-pulse-glow 4s ease-in-out infinite; }
+.music-card.anim-tilt-rock { animation: card-tilt-rock 5s ease-in-out infinite; }
+.music-card.anim-drift-diagonal { animation: card-drift-diagonal 6.5s ease-in-out infinite; }
+.music-card.anim-bounce-soft { animation: card-bounce-soft 4.5s ease-in-out infinite; }
+
+.music-card:nth-child(1) { animation-delay: 0s; }
+.music-card:nth-child(2) { animation-delay: 0.2s; }
+.music-card:nth-child(3) { animation-delay: 0.4s; }
+.music-card:nth-child(4) { animation-delay: 0.6s; }
+.music-card:nth-child(5) { animation-delay: 0.8s; }
+.music-card:nth-child(6) { animation-delay: 0.1s; }
+.music-card:nth-child(7) { animation-delay: 0.3s; }
+.music-card:nth-child(8) { animation-delay: 0.5s; }
+.music-card:nth-child(9) { animation-delay: 0.7s; }
+.music-card:nth-child(10) { animation-delay: 0.15s; }
+.music-card:nth-child(11) { animation-delay: 0.35s; }
+.music-card:nth-child(12) { animation-delay: 0.55s; }
+
+/* =============================================
+   INLINE PLAYER (right panel)
+   ============================================= */
+.inline-player {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 40px);
+  position: relative;
+}
+
+.inline-player-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.inline-player-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: rotate(90deg);
+}
+
+/* Visualizer area */
+.inline-player-viz {
+  position: relative;
+  width: calc(100% - 20px);
+  margin: 10px auto 0;
+  aspect-ratio: 2 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 0 20px rgba(0, 229, 255, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  animation: viz-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes viz-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(0, 229, 255, 0.04),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 229, 255, 0.1),
+      0 0 60px rgba(0, 229, 255, 0.04),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* Softened album art background */
+.viz-bg-image {
+  position: absolute;
+  inset: -8px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(6px) saturate(1.3) brightness(0.6);
+  transform: scale(1.05);
+  z-index: 0;
+}
+
+.viz-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at center, transparent 40%, rgba(6, 6, 26, 0.5) 100%),
+    linear-gradient(180deg, rgba(6, 6, 26, 0.05) 0%, rgba(6, 6, 26, 0.25) 100%);
+}
+
+.inline-player-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* Vignette overlay for depth */
+.viz-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 14px;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(6, 6, 26, 0.45) 100%);
+}
+
+.viz-cycle-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 5;
+  padding: 3px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.viz-cycle-btn:hover {
+  color: var(--accent-cyan);
+  border-color: rgba(0, 229, 255, 0.25);
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+}
+
+/* Track info */
+.inline-player-track {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 0;
+}
+
+.inline-player-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--glass-border);
+}
+
+.inline-player-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inline-player-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inline-player-artist {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* Progress */
+.inline-player-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 0;
+}
+
+.inline-player-time {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  min-width: 30px;
+  text-align: center;
+}
+
+.inline-player-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.inline-player-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+/* Controls */
+.inline-player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 16px;
+}
+
+.ip-ctrl-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ip-ctrl-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ip-ctrl-btn.ip-play {
+  width: 48px;
+  height: 48px;
+  background: var(--accent-gradient);
+  color: #06061a;
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.18);
+}
+
+.ip-ctrl-btn.ip-play:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 36px rgba(0, 229, 255, 0.3);
+}
+
+/* === MINI PLAYLIST === */
+.inline-player-playlist {
+  border-top: 1px solid var(--glass-border);
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.ip-playlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  position: sticky;
+  top: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  z-index: 2;
+}
+
+.ip-playlist-count {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.ip-playlist-list {
+  padding: 0 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ip-playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.ip-playlist-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ip-playlist-item--active {
+  background: rgba(0, 229, 255, 0.06);
+}
+
+.ip-playlist-idx {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ip-playlist-item--active .ip-playlist-idx {
+  color: var(--accent-cyan);
+}
+
+.ip-playlist-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ip-playlist-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ip-playlist-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ip-playlist-item--active .ip-playlist-name {
+  color: var(--accent-cyan);
+}
+
+.ip-playlist-art {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ip-playlist-dur {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Playlist playing indicator */
+.ip-playlist-playing {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  height: 14px;
+}
+
+.ip-playlist-playing span {
+  width: 2px;
+  background: var(--accent-cyan);
+  border-radius: 1px;
+  animation: eq-bar 0.5s ease-in-out infinite alternate;
+}
+
+.ip-playlist-playing span:nth-child(1) { height: 8px; animation-delay: 0s; }
+.ip-playlist-playing span:nth-child(2) { height: 12px; animation-delay: 0.12s; }
+.ip-playlist-playing span:nth-child(3) { height: 6px; animation-delay: 0.24s; }
+
+/* === "Want to hear some sound?" CTA below hero image === */
+.hero-sound-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 28px 12px 20px;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.06), rgba(124, 58, 237, 0.06));
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 60px;
+  text-decoration: none;
+  color: var(--text-primary) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 5;
+  backdrop-filter: blur(12px);
+}
+
+.hero-sound-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 60px;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(124, 58, 237, 0.12));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hero-sound-cta:hover::before {
+  opacity: 1;
+}
+
+.hero-sound-cta:hover {
+  border-color: rgba(0, 229, 255, 0.45);
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 32px rgba(0, 229, 255, 0.15),
+    0 0 60px rgba(0, 229, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.hero-sound-cta:hover svg {
+  transform: translateX(4px);
+}
+
+.hero-sound-cta svg {
+  color: var(--accent-cyan);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+/* Equalizer bars */
+.hero-sound-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.hero-sound-eq span {
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to top, var(--accent-cyan), var(--accent-purple));
+  animation: hero-eq 0.8s ease-in-out infinite alternate;
+}
+
+.hero-sound-eq span:nth-child(1) { height: 6px; animation-delay: 0s; }
+.hero-sound-eq span:nth-child(2) { height: 13px; animation-delay: 0.15s; }
+.hero-sound-eq span:nth-child(3) { height: 9px; animation-delay: 0.3s; }
+.hero-sound-eq span:nth-child(4) { height: 16px; animation-delay: 0.1s; }
+
+@keyframes hero-eq {
+  0% { transform: scaleY(0.3); opacity: 0.5; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+.hero-sound-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+  .music-split-layout {
+    flex-direction: column;
+  }
+
+  .music-split-layout.player-open .music-list-panel {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  .music-player-panel {
+    flex: 1;
+    max-width: 100%;
+    position: static;
+    max-height: none;
+  }
+
+  .inline-player {
+    max-height: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .music-page-header {
+    padding: 70px 0 20px;
+  }
+
+  .hero-sound-cta {
+    padding: 10px 22px 10px 16px;
+    gap: 10px;
+  }
+
+  .hero-sound-text {
+    font-size: 0.8rem;
+  }
+
+  .inline-player-controls {
+    gap: 12px;
+  }
+
+  .ip-ctrl-btn.ip-play {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .music-page-title {
+    font-size: 2rem;
+  }
+
+  .music-card {
+    padding: 6px 8px;
+    gap: 8px;
+  }
+
+  .music-card-thumb {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* =============================================
+   MINI PLAYER — persistent bottom bar
+   ============================================= */
+.mini-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  background: rgba(10, 10, 30, 0.92);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
+  animation: miniSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes miniSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.mini-player-progress {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mini-player-progress-fill {
+  height: 100%;
+  border-radius: 0 2px 2px 0;
+  transition: width 0.3s linear;
+}
+
+.mini-player-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: opacity 0.2s;
+}
+
+.mini-player-info:hover {
+  opacity: 0.8;
+}
+
+.mini-player-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.mini-player-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mini-player-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-player-artist {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-ctrl {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.mini-ctrl:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mini-ctrl.mini-play {
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.mini-ctrl.mini-play:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: scale(1.05);
+}
+
+.mini-ctrl.mini-close {
+  margin-left: 4px;
+  opacity: 0.5;
+}
+
+.mini-ctrl.mini-close:hover {
+  opacity: 1;
+  color: #ef4444;
+}
+
+/* Repeat button states */
+.ip-repeat,
+.mini-repeat {
+  opacity: 0.4;
+  transition: all 0.2s ease;
+}
+
+.ip-repeat--active,
+.mini-repeat--active {
+  opacity: 1;
+  color: var(--accent-cyan, #00e5ff);
+}
+
+.ip-repeat--active:hover,
+.mini-repeat--active:hover {
+  color: var(--accent-cyan, #00e5ff);
+}
