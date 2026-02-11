@@ -80,20 +80,19 @@ const About = () => {
             </h2>
             <div className="about-text">
               <p>
-                Power Platform Developer with
-                <strong> 8+ years</strong> of experience delivering enterprise business
-                applications across Dynamics 365 Customer Engagement, Power Apps, Power
-                Automate, and Dataverse.
+                About <strong>8 years</strong> of experience in the Power Platform world
+                — covering Development, Administration, Training, Support, CoE, and
+                Operations.
               </p>
               <p>
-                Extensive experience working on multiple Dynamics 365 CRM projects from
-                full lifecycle phases — including requirement analysis, system design,
-                configuration, customization, integration, deployment, and ongoing support.
+                Core expertise in D365 CE (CRM), Power Apps, Power Automate, Power Pages,
+                Power BI, Dataverse, and Copilot Studio. From Fresher to Senior in D365
+                CRM at FPT Software, now at Swiss Post working on Power Platform
+                governance, citizen development, and AI integration.
               </p>
               <p>
-                Strong focus on building governed, secure, and scalable systems of record
-                with long-term maintainability. Actively expanding into AI and agentic
-                solution design within the Power Platform ecosystem.
+                Current Goal: Power Platform Scale, Governance, and Leadership — combined
+                with Copilot Agents and enterprise AI capabilities.
               </p>
             </div>
             <div className="about-stats">
@@ -102,35 +101,39 @@ const About = () => {
                 <span className="stat-label">Years Experience</span>
               </div>
               <div className="about-stat">
-                <span className="stat-number">10+</span>
-                <span className="stat-label">Major Projects</span>
+                <span className="stat-number">19+</span>
+                <span className="stat-label">Projects</span>
               </div>
               <div className="about-stat">
                 <span className="stat-number">PL-400</span>
-                <span className="stat-label">Certified</span>
+                <span className="stat-label">Developer</span>
+              </div>
+              <div className="about-stat">
+                <span className="stat-number">PL-200</span>
+                <span className="stat-label">Consultant</span>
               </div>
             </div>
           </div>
           <div className="about-highlights">
             <div className="about-highlight-card">
-              <div className="highlight-icon">🎯</div>
-              <h3>Business-First Approach</h3>
-              <p>Understanding business problems before solutioning</p>
+              <div className="highlight-icon">⚡</div>
+              <h3>Power Platform at Scale</h3>
+              <p>Dev, Admin, Training, Support, CoE & Operations</p>
             </div>
             <div className="about-highlight-card">
-              <div className="highlight-icon">🏗️</div>
-              <h3>Scalable Architecture</h3>
-              <p>Designing Dataverse models for long-term evolution</p>
+              <div className="highlight-icon">🔷</div>
+              <h3>D365 CE (CRM)</h3>
+              <p>Full lifecycle configuration and customization</p>
             </div>
             <div className="about-highlight-card">
               <div className="highlight-icon">🤖</div>
-              <h3>AI-Ready Solutions</h3>
-              <p>Planning CRM solutions to be AI and agent-ready</p>
+              <h3>AI & Copilot Agents</h3>
+              <p>Copilot Studio, OpenAI, and AI productivity</p>
             </div>
             <div className="about-highlight-card">
               <div className="highlight-icon">🛡️</div>
-              <h3>Governance First</h3>
-              <p>Configuration and governance over fragile customization</p>
+              <h3>Governance & ALM</h3>
+              <p>Compliance, CI/CD, CoE, environment strategy</p>
             </div>
           </div>
         </div>

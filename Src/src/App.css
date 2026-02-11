@@ -998,6 +998,8 @@ ul {
 .cert-container {
   display: flex;
   justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
 }
 
 .cert-card {
@@ -1485,4 +1487,390 @@ ul {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 229, 255, 0.25);
+}
+
+/* ═══════════════════════════════════════════════
+   CopilotKit Theme Overrides — Phase 4 Agent Chat
+   Separate themes for Portfolio and Music pages
+   ═══════════════════════════════════════════════ */
+
+/* ── Shared dark theme base (both popups) ── */
+.copilotKitPopup {
+  --copilot-kit-primary-color: #b794f6 !important;
+  --copilot-kit-contrast-color: #fff !important;
+  --copilot-kit-background-color: #0a0a19 !important;
+  --copilot-kit-input-background-color: rgba(255, 255, 255, 0.04) !important;
+  --copilot-kit-secondary-color: #111128 !important;
+  --copilot-kit-secondary-contrast-color: #e0e0f0 !important;
+  --copilot-kit-separator-color: rgba(255, 255, 255, 0.08) !important;
+  --copilot-kit-muted-color: rgba(255, 255, 255, 0.25) !important;
+  --copilot-kit-shadow-sm: 0 2px 8px rgba(0,0,0,0.4) !important;
+  --copilot-kit-shadow-md: 0 8px 24px rgba(0,0,0,0.5) !important;
+  --copilot-kit-shadow-lg: 0 16px 48px rgba(0,0,0,0.6), 0 0 40px rgba(124,58,237,0.08) !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  z-index: 9999 !important;
+}
+
+/* ── Bigger popup window ── */
+@media (min-width: 640px) {
+  .copilotKitPopup .copilotKitWindow {
+    width: 28rem !important;
+    height: 660px !important;
+    max-height: calc(100vh - 6rem) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.04),
+                0 0 60px rgba(124, 58, 237, 0.06) !important;
+    overflow: hidden !important;
+  }
+}
+
+/* ── Trigger button — gradient glow ── */
+.copilotKitButton {
+  width: 3.75rem !important;
+  height: 3.75rem !important;
+  border: none !important;
+  transition: box-shadow 0.3s ease, transform 0.2s ease !important;
+}
+
+/* ── Header — sleek dark ── */
+.copilotKitHeader {
+  background: rgba(12, 12, 30, 0.98) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  height: 60px !important;
+  padding-left: 1.25rem !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.01em !important;
+}
+@media (min-width: 640px) {
+  .copilotKitHeader {
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+  }
+}
+.copilotKitHeader > button {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.copilotKitHeader > button:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ── Issue R3-#1: Hide debug console, help modal, and CopilotKit branding ── */
+.copilotKitDevConsole,
+.copilotKitDebugMenuTriggerButton,
+.copilotKitDebugMenu,
+.copilotKitHelpModal {
+  display: none !important;
+}
+/* Hide the CopilotKit icon/logo in the header controls area */
+.copilotKitHeaderControls > :not(.copilotKitHeaderCloseButton):not(button:last-child) {
+  display: none !important;
+}
+
+/* ── Messages area ── */
+.copilotKitMessages {
+  background: transparent !important;
+}
+.copilotKitMessagesContainer {
+  padding: 1.25rem 1.25rem !important;
+  gap: 4px !important;
+}
+
+/* ── User messages ── */
+.copilotKitMessage.copilotKitUserMessage {
+  border-radius: 16px 16px 4px 16px !important;
+  padding: 10px 16px !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+  max-width: 85% !important;
+}
+
+/* ── Assistant messages ── */
+.copilotKitMessage.copilotKitAssistantMessage {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.7 !important;
+}
+p.copilotKitMarkdownElement {
+  font-size: 0.9rem !important;
+  line-height: 1.7 !important;
+}
+
+/* ── Input container — glass ── */
+.copilotKitInputContainer {
+  background: rgba(12, 12, 30, 0.95) !important;
+  border-bottom-left-radius: 20px !important;
+  border-bottom-right-radius: 20px !important;
+  padding-bottom: 12px !important;
+}
+.copilotKitInput {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  min-height: 56px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.copilotKitInput:focus-within {
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.1) !important;
+}
+.copilotKitInput > textarea,
+.copilotKitInput textarea {
+  color: #fff !important;
+  font-size: 0.875rem !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  -webkit-appearance: none !important;
+}
+.copilotKitInput > textarea::placeholder,
+.copilotKitInput textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── Send / control buttons ── */
+.copilotKitInputControlButton:not([disabled]) {
+  color: #b794f6 !important;
+}
+.copilotKitInputControlButton:not([disabled]):hover {
+  color: #d4b5ff !important;
+}
+
+/* ── Powered-by tag hide ── */
+.poweredBy {
+  opacity: 0.35 !important;
+  font-size: 10px !important;
+}
+
+/* ── Chat scrollbar ── */
+.copilotKitMessages::-webkit-scrollbar {
+  width: 5px;
+}
+.copilotKitMessages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.copilotKitMessages::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.18);
+  border-radius: 10px;
+}
+.copilotKitMessages::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.3);
+}
+
+/* ── Activity dots ── */
+.copilotKitActivityDot {
+  background-color: #b794f6 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   PORTFOLIO CHAT — Professional Cyan/Blue Theme
+   ═══════════════════════════════════════════════ */
+.portfolio-chat {
+  --copilot-kit-primary-color: #00e5ff !important;
+}
+.portfolio-chat .copilotKitButton {
+  background: linear-gradient(135deg, #0097a7, #00e5ff) !important;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3),
+              0 0 40px rgba(0, 229, 255, 0.1) !important;
+}
+.portfolio-chat .copilotKitButton:hover {
+  box-shadow: 0 0 28px rgba(0, 229, 255, 0.5),
+              0 0 60px rgba(0, 229, 255, 0.15) !important;
+  transform: scale(1.08) !important;
+}
+.portfolio-chat .copilotKitMessage.copilotKitUserMessage {
+  background: rgba(0, 229, 255, 0.08) !important;
+  border: 1px solid rgba(0, 229, 255, 0.12) !important;
+}
+.portfolio-chat .copilotKitInputControlButton:not([disabled]) {
+  color: #00e5ff !important;
+}
+.portfolio-chat .copilotKitActivityDot {
+  background-color: #00e5ff !important;
+}
+
+/* ═══════════════════════════════════════════════
+   MUSIC CHAT — Vibrant Purple/Neon Theme + Top Position
+   ═══════════════════════════════════════════════ */
+.music-chat {
+  --copilot-kit-primary-color: #b794f6 !important;
+}
+
+/* ── Position the popup at the TOP-RIGHT instead of bottom-right ── */
+.music-chat.copilotKitPopup {
+  top: 1rem !important;
+  bottom: auto !important;
+  right: 1rem !important;
+}
+@media (min-width: 640px) {
+  .music-chat .copilotKitWindow {
+    bottom: auto !important;
+    top: 0 !important;
+  }
+}
+
+/* ── Trigger button — enhanced purple glow with animation ── */
+.music-chat .copilotKitButton {
+  position: relative !important;
+  overflow: visible !important;
+  background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc) !important;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.5),
+              0 0 40px rgba(192, 132, 252, 0.15),
+              inset 0 0 20px rgba(192, 132, 252, 0.1) !important;
+  animation: megSoundPulse 3s ease-in-out infinite !important;
+}
+.music-chat .copilotKitButton:hover {
+  box-shadow: 0 0 32px rgba(124, 58, 237, 0.7),
+              0 0 64px rgba(192, 132, 252, 0.25),
+              inset 0 0 24px rgba(192, 132, 252, 0.15) !important;
+  transform: scale(1.1) !important;
+  animation: none !important;
+}
+
+/* ── Header — cooler with gradient accent ── */
+.music-chat .copilotKitHeader {
+  background: linear-gradient(180deg, rgba(124,58,237,0.15) 0%, rgba(12, 12, 30, 0.98) 100%) !important;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.2) !important;
+  position: relative !important;
+}
+.music-chat .copilotKitHeader::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 1rem !important;
+  right: 1rem !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(192,132,252,0.4), transparent) !important;
+}
+
+/* ── Title with AI sparkle ── */
+.music-chat .copilotKitHeader span:first-child,
+.music-chat .copilotKitHeaderTitle {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.music-chat .copilotKitHeaderTitle::before {
+  content: '✦' !important;
+  color: #c084fc !important;
+  font-size: 14px !important;
+  animation: megSparkle 2s ease-in-out infinite !important;
+}
+
+/* ── Window with subtle gradient border ── */
+@media (min-width: 640px) {
+  .music-chat .copilotKitWindow {
+    border: 1px solid rgba(124, 58, 237, 0.15) !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(124, 58, 237, 0.08),
+                0 0 80px rgba(124, 58, 237, 0.08) !important;
+  }
+}
+
+.music-chat .copilotKitMessage.copilotKitUserMessage {
+  background: rgba(124, 58, 237, 0.08) !important;
+  border: 1px solid rgba(124, 58, 237, 0.12) !important;
+}
+.music-chat .copilotKitInputControlButton:not([disabled]) {
+  color: #c084fc !important;
+}
+.music-chat .copilotKitInput > textarea,
+.music-chat textarea {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #c084fc !important;
+  opacity: 1 !important;
+  background: transparent !important;
+}
+.music-chat .copilotKitActivityDot {
+  background-color: #c084fc !important;
+}
+
+/* ── Meg Sound custom icon in trigger button ── */
+.meg-sound-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.meg-sound-icon svg {
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.5));
+}
+
+/* ── "Click Me" floating label — real DOM element ── */
+.meg-sound-click-label {
+  position: fixed;
+  top: calc(1rem + 0.75rem); /* vertically aligned with the trigger button */
+  right: calc(1rem + 3.75rem + 12px); /* button width + gap */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 9998;
+  animation: megLabelPulse 2.5s ease-in-out infinite;
+}
+.meg-sound-click-label-text {
+  background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(192,132,252,0.18));
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  color: #d4b5ff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+  box-shadow: 0 2px 16px rgba(124, 58, 237, 0.25);
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(8px);
+}
+.meg-sound-click-label-arrow {
+  color: rgba(192, 132, 252, 0.6);
+  font-size: 16px;
+}
+/* Hide logic handled by React state (isChatOpen) */
+@keyframes megLabelPulse {
+  0%, 100% { opacity: 1; transform: translateX(0); }
+  50% { opacity: 0.7; transform: translateX(-3px); }
+}
+
+/* ── Genre picker overlay (positioned inside the chat window) ── */
+.meg-sound-genre-overlay {
+  position: fixed;
+  top: calc(1rem + 60px + 8px); /* below header */
+  right: 1.5rem;
+  width: 25rem;
+  max-width: calc(100vw - 3rem);
+  z-index: 10001;
+  padding: 16px;
+  background: rgba(10, 10, 25, 0.96);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 14px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 40px rgba(124, 58, 237, 0.1);
+  animation: megSlideIn 0.4s ease-out;
+}
+
+/* ── Animations ── */
+@keyframes megSoundPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.5), 0 0 40px rgba(192, 132, 252, 0.15); }
+  50% { box-shadow: 0 0 28px rgba(124, 58, 237, 0.6), 0 0 56px rgba(192, 132, 252, 0.22); }
+}
+@keyframes megSparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+@keyframes megSlideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Pulse animation for NowPlaying indicator in Generative UI ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
 }

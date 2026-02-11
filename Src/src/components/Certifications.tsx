@@ -73,7 +73,7 @@ const Certifications = () => {
             <div className="cert-badge">
               <svg viewBox="0 0 120 120" className="cert-badge-svg">
                 <defs>
-                  <linearGradient id="certGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient id="certGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#00e5ff" />
                     <stop offset="100%" stopColor="#7c3aed" />
                   </linearGradient>
@@ -81,10 +81,10 @@ const Certifications = () => {
                 <polygon
                   points="60,8 72,40 108,40 80,58 90,90 60,72 30,90 40,58 12,40 48,40"
                   fill="none"
-                  stroke="url(#certGrad)"
+                  stroke="url(#certGrad1)"
                   strokeWidth="2"
                 />
-                <circle cx="60" cy="60" r="22" fill="none" stroke="url(#certGrad)" strokeWidth="1.5" opacity="0.6" />
+                <circle cx="60" cy="60" r="22" fill="none" stroke="url(#certGrad1)" strokeWidth="1.5" opacity="0.6" />
               </svg>
               <span className="cert-badge-text">PL-400</span>
             </div>
@@ -93,7 +93,38 @@ const Certifications = () => {
             <p className="cert-exam">Exam PL-400</p>
             <div className="cert-status">
               <span className="cert-status-dot"></span>
-              Current — Planned Renewal
+              Current
+            </div>
+            <div className="cert-logo">
+              <img src="/images/Microsoft_Power_Platform_logo.svg" alt="Microsoft Power Platform" />
+            </div>
+          </div>
+          <div className="cert-card">
+            <div className="cert-glow"></div>
+            <div className="cert-badge">
+              <svg viewBox="0 0 120 120" className="cert-badge-svg">
+                <defs>
+                  <linearGradient id="certGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#7c3aed" />
+                    <stop offset="100%" stopColor="#00e5ff" />
+                  </linearGradient>
+                </defs>
+                <polygon
+                  points="60,8 72,40 108,40 80,58 90,90 60,72 30,90 40,58 12,40 48,40"
+                  fill="none"
+                  stroke="url(#certGrad2)"
+                  strokeWidth="2"
+                />
+                <circle cx="60" cy="60" r="22" fill="none" stroke="url(#certGrad2)" strokeWidth="1.5" opacity="0.6" />
+              </svg>
+              <span className="cert-badge-text">PL-200</span>
+            </div>
+            <h3 className="cert-title">Microsoft Certified</h3>
+            <h4 className="cert-name">Power Platform Functional Consultant Associate</h4>
+            <p className="cert-exam">Exam PL-200</p>
+            <div className="cert-status">
+              <span className="cert-status-dot"></span>
+              Current
             </div>
             <div className="cert-logo">
               <img src="/images/Microsoft_Power_Platform_logo.svg" alt="Microsoft Power Platform" />
