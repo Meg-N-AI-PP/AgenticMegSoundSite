@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@copilotkit/react-core": "^1.51.3",
+    "@copilotkit/react-ui": "^1.51.3",
     "@supabase/supabase-js": "^2.95.3",
     "@types/react-router-dom": "^5.3.3",
     "animejs": "^3.2.2",

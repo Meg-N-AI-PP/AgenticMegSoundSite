@@ -173,9 +173,9 @@ const Hero = () => {
             Power Platform
           </p>
           <p className="hero-description">
-            8+ years delivering enterprise business applications across
-            Dynamics 365, Power Apps, Power Automate, and Dataverse.
-            Expanding into AI and agentic solutions.
+            About 8 years in the Power Platform world — Dev, Admin,
+            Trainer, Support, CoE & Operations. D365 CE, Power Apps,
+            Power Automate, Copilot Studio & OpenAI.
           </p>
           <div className="hero-cta-group">
             <a href="#experience" className="hero-cta primary"
@@ -188,6 +188,14 @@ const Hero = () => {
             <a href="#skills" className="hero-cta secondary"
               onClick={e => { e.preventDefault(); document.querySelector('#skills')?.scrollIntoView({ behavior: 'smooth' }); }}>
               <span>Explore Skills</span>
+            </a>
+            <a href="/Meg-CV.pdf" download="Meg-CV.pdf" className="hero-cta secondary" title="Download Meg's Resume">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Resume</span>
             </a>
           </div>
           <div className="hero-social-links">
