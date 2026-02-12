@@ -245,25 +245,20 @@ export async function incrementPlayCount(trackId: string): Promise<void> {
 }
 
 /**
- * Universal vector-based music search.
- * Uses natural language query → embedding → pgvector similarity search.
- *
- * Fallback chain:
- *   1. search_tracks_by_text RPC (text→embedding→pgvector)
- *   2. Full-text search across title, artist, genre, and tags columns
- *   3. Genre column ilike match
- *   4. Random tracks
- *
- * This function should be used for ALL music discovery requests
- * so that natural language queries ("phonk style", "dark bass heavy",
- * "something groovy") are handled properly.
+ * Universal natural-language music search.
+ * Uses Supabase Edge Function → OpenAI embedding → pgvector cosine similarity.
+ * Results are cached in-memory to avoid repeated API calls for the same query.
+ * Falls back to random tracks only if the Edge Function is unavailable.
  */
+
+const searchCache = new Map<string, { tracks: MusicTrack[]; method: string; ts: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 export async function searchTracksVector(
   query: string,
   count = 6
 ): Promise<{ tracks: MusicTrack[]; method: string }> {
   if (!isSupabaseConfigured) {
-    // Offline: fuzzy search across title/artist/genre/tags
     const all = getOfflineTracks(20);
     const q = query.toLowerCase();
     const filtered = all.filter(
@@ -279,87 +274,29 @@ export async function searchTracksVector(
     };
   }
 
-  // 1. Try vector search via RPC (best quality — uses embeddings)
+  // Check cache first (instant response for repeated queries)
+  const cacheKey = `${query.toLowerCase().trim()}:${count}`;
+  const cached = searchCache.get(cacheKey);
+  if (cached && Date.now() - cached.ts < CACHE_TTL) {
+    return { tracks: cached.tracks, method: 'vector-search-cached' };
+  }
+
+  // Vector search via Edge Function — returns full track rows (single round-trip)
   try {
-    const { data, error } = await supabase!.rpc('search_tracks_by_text', {
-      query_text: query,
-      match_count: count,
+    const { data: fnData, error: fnError } = await supabase!.functions.invoke('smooth-handler', {
+      body: { query, count },
     });
 
-    if (!error && data && data.length > 0) {
-      // RPC may return slim rows — fetch full details
-      const ids = data.map((d: { id: string }) => d.id);
-      const { data: fullRows, error: fetchErr } = await supabase!
-        .from('tracks')
-        .select('*')
-        .in('id', ids);
-
-      if (!fetchErr && fullRows && fullRows.length > 0) {
-        return {
-          tracks: (fullRows as TrackRow[]).map(mapRowToTrack),
-          method: 'vector-search',
-        };
-      }
+    if (!fnError && fnData && fnData.length > 0) {
+      const tracks = (fnData as TrackRow[]).map(mapRowToTrack);
+      searchCache.set(cacheKey, { tracks, method: 'vector-search', ts: Date.now() });
+      return { tracks, method: 'vector-search' };
     }
   } catch (err) {
-    console.warn('⚠️ Vector search RPC not available, falling back:', err);
+    console.warn('⚠️ Vector search failed:', err);
   }
 
-  // 2. Full-text search across multiple columns
-  try {
-    const q = `%${query}%`;
-    const { data, error } = await supabase!
-      .from('tracks')
-      .select('*')
-      .or(`title.ilike.${q},artist.ilike.${q},genre.ilike.${q}`)
-      .limit(count);
-
-    if (!error && data && data.length > 0) {
-      return {
-        tracks: (data as TrackRow[]).map(mapRowToTrack),
-        method: 'full-text-search',
-      };
-    }
-
-    // 2b. Try tag-based matching
-    const { data: tagData, error: tagErr } = await supabase!
-      .from('tracks')
-      .select('*')
-      .contains('tags', [query.toLowerCase()])
-      .limit(count);
-
-    if (!tagErr && tagData && tagData.length > 0) {
-      return {
-        tracks: (tagData as TrackRow[]).map(mapRowToTrack),
-        method: 'tag-search',
-      };
-    }
-  } catch (err) {
-    console.warn('⚠️ Full-text search failed:', err);
-  }
-
-  // 3. Genre column ilike as last resort before random
-  try {
-    const { data, error } = await supabase!
-      .from('tracks')
-      .select('*')
-      .ilike('genre', `%${query}%`)
-      .limit(count);
-
-    if (!error && data && data.length > 0) {
-      return {
-        tracks: (data as TrackRow[]).map(mapRowToTrack),
-        method: 'genre-match',
-      };
-    }
-  } catch {
-    // fall through
-  }
-
-  // 4. Final fallback: random tracks
+  // Fallback: random tracks
   const random = await fetchRandomTracks(count);
-  return {
-    tracks: random,
-    method: 'random-fallback',
-  };
+  return { tracks: random, method: 'random-fallback' };
 }
