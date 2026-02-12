@@ -3,7 +3,8 @@
 > **Project:** Meg — Agentic Music Portfolio  
 > **Phase:** 4 — Add AI Agent Chat to Portfolio & Music Pages  
 > **Date:** February 11, 2026  
-> **Status:** 🔄 In Progress  
+> **Status:** ✅ Completed  
+> **Branch:** `meg`  
 > **Prereq:** Phase 3 completed (Supabase backend, real audio, visualizers)
 
 ---
@@ -15,8 +16,10 @@
 3. [Copilot Cloud Setup Guide](#copilot-cloud-setup-guide)
 4. [Implementation Checklist](#implementation-checklist)
 5. [Feature 1 — Portfolio Agent Chat](#feature-1--portfolio-agent-chat)
-6. [Feature 2 — Music Page Agent](#feature-2--music-page-agent)
+6. [Feature 2 — Music Agent (Meg Sound)](#feature-2--music-agent-meg-sound)
 7. [Styling & Theme](#styling--theme)
+8. [Bug Fixes & Iterations](#bug-fixes--iterations)
+9. [Deployment](#deployment)
 
 ---
 
@@ -26,18 +29,20 @@ Phase 4 adds **two AI agent chat experiences** powered by CopilotKit + Copilot C
 
 | Feature | Page | What It Does |
 |---------|------|-------------|
-| **Portfolio Agent** | `/` | Chat sidebar where visitors ask about Meg's skills, projects, certifications. Responses stream with Generative UI (styled cards). Detects hover/click on project cards and proactively shares details. |
-| **Music Agent** | `/music` | Floating DJ agent that takes playback commands (play, pause, next, prev), generates playlists by genre/mood, auto-plays music after 3 minutes of idle, and recommends similar tracks. |
+| **Portfolio Agent** | `/` | AI secretary chat where visitors ask about Meg's skills, projects, certifications. Responses stream with Generative UI cards. Detects click on project cards and proactively shares details. Includes resume download action. |
+| **Meg Sound** (Music Agent) | `/music` | Floating AI music assistant positioned at top-right. Takes playback commands, generates playlists by genre/mood via vector search, auto-opens with genre picker after 2 minutes idle, recommends similar tracks. |
 
-### What Changes from Phase 3
+### What Changed from Phase 3
 
 | Before (Phase 3) | After (Phase 4) |
 |-------------------|-----------------|
-| Static portfolio sections | Agent-powered interactive Q&A with Generative UI |
-| Manual music browsing only | Voice/text commands for playback control |
-| No idle detection | 3-min idle auto-play with agent notification |
-| No recommendations | AI-driven playlist generation by genre/mood |
-| No project card interactivity beyond display | Hover/click triggers agent context about that project |
+| Static portfolio sections | Agent-powered interactive Q&A with Generative UI cards |
+| Manual music browsing only | Text commands for playback control + vector search |
+| No idle detection | 2-min idle auto-open chat with dynamic genre picker |
+| No recommendations | AI-driven playlist generation by genre/mood (pgvector) |
+| No project card interactivity beyond display | Click triggers agent context about that project |
+| No resume download | Resume download action with Generative UI button |
+| Basic CV data | Full real CV data from Meg CV.md + my CV.md (19 projects, 4 employers) |
 
 ---
 
@@ -100,41 +105,58 @@ When you want to switch from Copilot Cloud to your own Azure OpenAI model:
 ## Implementation Checklist
 
 ### Setup
-- [ ] Install `@copilotkit/react-core` and `@copilotkit/react-ui`
-- [ ] Add `VITE_COPILOTKIT_PUBLIC_API_KEY` to `.env`
-- [ ] Wrap app with `<CopilotKit>` provider in `main.tsx`
-- [ ] Import CopilotKit CSS
+- [x] Install `@copilotkit/react-core` and `@copilotkit/react-ui`
+- [x] Add `VITE_COPILOTKIT_PUBLIC_API_KEY` to `.env`
+- [x] Wrap each agent with its own `<CopilotKit>` provider (separate conversations)
+- [x] Import CopilotKit CSS in `main.tsx`
 
 ### Feature 1: Portfolio Agent Chat
-- [ ] Create `PortfolioAgent.tsx` component
-- [ ] Add `useCopilotReadable()` for About data
-- [ ] Add `useCopilotReadable()` for Skills data
-- [ ] Add `useCopilotReadable()` for Experience/Projects data
-- [ ] Add `useCopilotReadable()` for Certifications data
-- [ ] Create `useCopilotAction("showProjectDetail")` with Generative UI render
-- [ ] Create `useCopilotAction("showSkillBreakdown")` with Generative UI render
-- [ ] Create `useCopilotAction("showCertification")` with Generative UI render
-- [ ] Add project card hover/click → agent context event
-- [ ] Add `<CopilotPopup>` to Portfolio page
-- [ ] Style to match dark agentic theme
+- [x] Create `PortfolioAgent.tsx` component (~695 lines)
+- [x] Add `useCopilotReadable()` for About data (full personal info, hobbies, contact)
+- [x] Add `useCopilotReadable()` for Skills data (4 categories)
+- [x] Add `useCopilotReadable()` for Experience/Projects data (19 projects, 4 employers)
+- [x] Add `useCopilotReadable()` for Certifications data (PL-400 + PL-200)
+- [x] Create `useCopilotAction("showProjectDetail")` with Generative UI ProjectCard
+- [x] Create `useCopilotAction("showSkillBreakdown")` with Generative UI SkillCategoryCard
+- [x] Create `useCopilotAction("showCertification")` with Generative UI CertCard (both certs)
+- [x] Create `useCopilotAction("downloadResume")` with Generative UI download button
+- [x] Add project card click → silent agent trigger via `useCopilotChatInternal().sendMessage()`
+- [x] MutationObserver to hide `[project-click:...]` trigger messages in chat
+- [x] Add `<CopilotPopup>` with secretary persona
+- [x] Style with cyan theme (`.portfolio-chat`)
 
-### Feature 2: Music Page Agent
-- [ ] Create `MusicAgent.tsx` component
-- [ ] Add `useCopilotReadable()` for current player state
-- [ ] Add `useCopilotReadable()` for available tracks/genres
-- [ ] Create `useCopilotAction("controlPlayback")` — play/pause/next/prev/stop
-- [ ] Create `useCopilotAction("generatePlaylist")` — by genre/mood
-- [ ] Create `useCopilotAction("recommendSimilar")` — pgvector similarity
-- [ ] Add 3-minute idle detection timer
-- [ ] Auto-play + agent notification on idle
-- [ ] Add `<CopilotPopup>` to Music page
-- [ ] Style floating agent icon to match music theme
+### Feature 2: Music Agent (Meg Sound)
+- [x] Create `MusicAgent.tsx` component (~713 lines)
+- [x] Add `useCopilotReadable()` for current player state (real-time)
+- [x] Add `useCopilotReadable()` for playlist tracks
+- [x] Add `useCopilotReadable()` for user activity log
+- [x] Add `useCopilotReadable()` for available genres
+- [x] Create `useCopilotAction("controlPlayback")` — play/pause/next/prev/stop
+- [x] Create `useCopilotAction("searchAndPlayMusic")` — vector search via `searchTracksVector`
+- [x] Create `useCopilotAction("recommendSimilar")` — pgvector similarity
+- [x] Generative UI: PlaylistCard (with delete per track + Play All), NowPlayingCard
+- [x] Results stored in refs (`lastSearchResultRef`, `lastSimilarResultRef`) to avoid stale playlist display
+- [x] Add 2-minute idle detection timer
+- [x] Auto-open chat + dynamic genre picker (5 random genres from DB) on idle
+- [x] Genre picker closes when user starts typing
+- [x] `clickOutsideToClose` disabled when genre picker is visible
+- [x] "✦ Click Me" floating label next to trigger button (hides when chat opens)
+- [x] Add `<CopilotPopup>` positioned at top-right
+- [x] Style with purple neon theme (`.music-chat`)
+- [x] Custom SVG AI icon for trigger button
+
+### Agent Architecture
+- [x] Both agents always mounted in `App.tsx` (persist across navigation)
+- [x] Hidden via `visibility: hidden` + `pointer-events: none` (not `display: none`)
+- [x] Each agent has its own `<CopilotKit>` provider (isolated conversations)
 
 ### Polish
-- [ ] Custom CSS overrides for CopilotKit components
-- [ ] Mobile responsive chat
-- [ ] Test streaming behavior
-- [ ] Test offline fallback (agent should still work, just without Supabase data)
+- [x] Custom CSS overrides for CopilotKit components (dark theme, glass effects)
+- [x] Hide debug console, help modal, CopilotKit branding
+- [x] Textarea text visibility fix (`-webkit-text-fill-color`, `caret-color`)
+- [x] Genre label truncation via `shortGenre()` helper
+- [x] Test streaming behavior
+- [x] Resume button in Hero.tsx
 
 ---
 
@@ -143,82 +165,228 @@ When you want to switch from Copilot Cloud to your own Azure OpenAI model:
 ### Components
 | Component | Purpose |
 |---|---|
-| `PortfolioAgent.tsx` | Wraps `<CopilotPopup>`, registers all readables and actions |
-| Generative UI renders | Inline React components returned by tool actions |
+| `PortfolioAgent.tsx` (~695 lines) | Wraps `<CopilotKit>` + `<CopilotPopup>`, registers all readables and actions |
+| Generative UI renders | ProjectCard, SkillCategoryCard, CertCard, DownloadResumeCard |
 
-### Agent System Prompt
+### Agent Persona
 ```
-You are Meg's portfolio assistant. Help visitors learn about Meg's professional experience, skills, and projects. You are friendly, professional, and concise. When discussing projects or skills, use the available tools to show rich visual cards. Always be helpful and encourage visitors to explore.
+Professional secretary / executive assistant for Meg's portfolio.
+Non-technical, human-like. Refers to Meg in third person.
+Answers about projects, skills, certifications, and provides resume downloads.
 ```
+
+### Real CV Data Sources
+- **Meg CV.md** — Full employment history (14 projects), personal info, hobbies, contact
+- **my CV.md** — 5 additional projects (Education Platform, Contract Mgmt, Vehicle Lending, Document Approval, Copilot Studio)
 
 ### Readables (Context)
-The agent sees all portfolio data via `useCopilotReadable()`:
-- About section (bio, stats, highlights)
-- Skills (4 categories, 20 skills)
-- Experience (5 projects with roles, tech, descriptions, highlights)
-- Certifications (PL-400)
+| Readable | Data |
+|---|---|
+| `aboutData` | Full personal info, hobbies, professional summary, contact details |
+| `employmentData` | 4 employers: Swiss Post, Varkey Education, Freelancer, FPT Software |
+| `skillsData` | 4 categories: Power Platform, D365 CE/CRM, Development, AI & Research |
+| `projectsData` | 19 projects with role, tech stack, highlights, employer, client, location |
+| `certificationData` | PL-400 Developer + PL-200 Functional Consultant |
 
 ### Actions (Tools with Generative UI)
 | Action | Parameters | Renders |
 |---|---|---|
-| `showProjectDetail` | `projectTitle: string` | Styled project card with status, role, tech tags, highlights |
-| `showSkillBreakdown` | `category?: string` | Skill grid or single category card |
-| `showCertification` | none | PL-400 badge card |
+| `showProjectDetail` | `projectTitle: string` | Styled ProjectCard with status, role, tech tags, highlights, employer |
+| `showSkillBreakdown` | `category?: string` | SkillCategoryCard grid or single category |
+| `showCertification` | none | CertCard showing both PL-400 and PL-200 side by side |
+| `downloadResume` | none | Download button card linking to `/Meg-CV.pdf` |
 
-### Project Card Interaction
-When user hovers/clicks a project card in Experience section:
-1. Event fires with project data
-2. Agent receives context: "User is viewing project: {title}"
-3. Agent proactively responds with project details + "Any questions about this project?"
+### Project Card Click Interaction
+1. User clicks a project card in Experience section
+2. `clickedProject` state updates in App.tsx
+3. PortfolioAgent sends silent `[project-click:ProjectName]` message via `useCopilotChatInternal().sendMessage()`
+4. MutationObserver hides the trigger message from the chat UI
+5. Agent responds with project details using `showProjectDetail` action
 
 ---
 
-## Feature 2 — Music Page Agent
+## Feature 2 — Music Agent (Meg Sound)
 
 ### Components
 | Component | Purpose |
 |---|---|
-| `MusicAgent.tsx` | Wraps `<CopilotPopup>`, registers all readables and actions, manages idle timer |
+| `MusicAgent.tsx` (~713 lines) | Wraps `<CopilotKit>` + `<CopilotPopup>`, registers all readables and actions, manages idle timer, genre picker |
+| GenrePickerCard | Clickable genre pill buttons (5 random from DB) shown on idle auto-open |
+| PlaylistCard | Track list with album art, genre tags, delete per track, Play All button |
+| NowPlayingCard | Currently playing track card with green pulse indicator |
 
-### Agent System Prompt
+### Agent Persona
 ```
-You are Meg's DJ assistant on the music page. Help users discover and control music playback. You can play/pause/skip tracks, generate playlists by genre or mood, and recommend similar tracks. Keep responses short and fun. Use music emoji. When auto-playing for idle users, be friendly and suggest they might enjoy the track.
+Meg Sound — a cool, music-savvy AI assistant.
+Short, casual responses. Uses 🎵 🎶 🎧 emoji naturally.
+Smart AI music curator, not just a DJ.
+Anti-hallucination rules: only reference tracks that exist in provided context.
 ```
 
 ### Readables (Context)
-- Current player state (track name, artist, genre, isPlaying, progress)
-- Available genres in the library
-- Current playlist
+| Readable | Data |
+|---|---|
+| Player state | isPlaying, currentTrack (title/artist/genre/duration), playlist length, progress |
+| Playlist tracks | Full track list with positions, isCurrent flag |
+| User activity log | Last 15 events (played, paused, switched, resumed) |
+| Available genres | Genre list from database |
 
-### Actions (Tools)
-| Action | Parameters | What It Does |
-|---|---|---|
-| `controlPlayback` | `command: "play" \| "pause" \| "next" \| "previous"` | Calls PlayerContext methods |
-| `generatePlaylist` | `genre: string, count?: number` | Fetches tracks by genre from Supabase, builds playlist, starts playing |
-| `recommendSimilar` | none | Uses pgvector `find_similar_tracks` for current track |
+### Actions (Tools with Generative UI)
+| Action | Parameters | Renders | Search Method |
+|---|---|---|---|
+| `controlPlayback` | `command: string` | NowPlayingCard | N/A (PlayerContext) |
+| `searchAndPlayMusic` | `query: string, count?: number` | PlaylistCard | `searchTracksVector()` — 4-level fallback: vector RPC → full-text → genre ilike → random |
+| `recommendSimilar` | none | PlaylistCard | `fetchSimilarTracks()` — pgvector similarity |
 
-### 3-Minute Idle Auto-Play
+### Stale Playlist Fix
+Search/similar results are stored in refs (`lastSearchResultRef`, `lastSimilarResultRef`) so the Generative UI `render` function always shows the correct tracks from the current search, not the previous `playerState.playlist`.
+
+### 2-Minute Idle Auto-Open with Genre Picker
 1. Timer starts when `isPlaying === false`
-2. Resets on: user clicks, types, plays music, scrolls
+2. Resets on: user clicks, types, plays music, scrolls, mouse movement
 3. Pauses when tab is hidden (`visibilitychange`)
-4. When 3 minutes pass:
-   - Fetch a random track
-   - Play it via PlayerContext
-   - Agent sends message: "🎵 You've been quiet! I picked '{track}' for you — it's {genre}. Want more like this?"
+4. When 2 minutes pass:
+   - Programmatically clicks the popup open button via ref
+   - Shows `GenrePickerCard` overlay with 5 random genres fetched from `fetchDistinctGenres()`
+   - Genres are **dynamic from the database** (not hardcoded), shuffled each session
+   - User picks a genre → `fetchTracksByGenre()` (exact match) → starts playing
+   - Genre picker auto-closes when user starts typing in chat input
+   - `clickOutsideToClose` disabled while genre picker is visible
+
+### UI Enhancements
+- **Position:** Top-right (CSS override `top: 1rem; bottom: auto;`)
+- **Trigger button:** 3-color gradient (`#7c3aed → #a855f7 → #c084fc`), animated pulse glow
+- **Custom SVG icon:** Play button with gradient circle + sound wave arcs
+- **Header:** Gradient accent with shimmering `::after` line, ✦ sparkle prefix
+- **"✦ Click Me" label:** Real DOM element floating left of trigger, animated pulse, hides when chat opens (React `isChatOpen` state)
+- **Genre truncation:** `shortGenre()` helper extracts first meaningful segment
 
 ---
 
 ## Styling & Theme
 
-All CopilotKit UI components will be styled to match the existing dark agentic theme:
+All CopilotKit UI components are styled to match the existing dark agentic theme:
 
+### Shared Base (both agents)
 | Element | Style |
 |---|---|
-| Chat background | `rgba(10, 10, 20, 0.95)` with backdrop blur |
-| User message | Cyan accent (`#00e5ff`) |
-| Agent message | Light text on dark |
-| Buttons/actions | Purple accent (`#7c3aed`) |
-| Generative UI cards | Same glassmorphism as existing cards |
-| Font | Inherit from app (`Inter` / system) |
-| Border | `1px solid rgba(255, 255, 255, 0.06)` |
-| Popup trigger button | Gradient border, glow effect |
+| Chat background | `#0a0a19` with backdrop blur |
+| Window | `28rem` wide, `660px` tall, `20px` border-radius, glass shadow |
+| Header | `rgba(12, 12, 30, 0.98)`, 60px height |
+| User message | Rounded bubble with accent background |
+| Agent message | Light text `rgba(255, 255, 255, 0.88)` |
+| Input | Glass container, purple focus glow, white text |
+| Font | `Inter` / system |
+| Scrollbar | Custom 5px purple thumb |
+| Hidden | Debug console, help modal, CopilotKit icon/branding |
+
+### Portfolio Chat (`.portfolio-chat`)
+| Element | Style |
+|---|---|
+| Primary color | Cyan `#00e5ff` |
+| Button | Gradient `#0097a7 → #00e5ff` with cyan glow |
+| User messages | Cyan-tinted background |
+
+### Music Chat (`.music-chat`)
+| Element | Style |
+|---|---|
+| Primary color | Purple `#b794f6` |
+| Button | 3-gradient `#7c3aed → #a855f7 → #c084fc` with animated pulse |
+| Position | Top-right (`top: 1rem`) |
+| Header | Gradient accent, ✦ sparkle animation |
+| Window border | Purple glow shadow |
+| User messages | Purple-tinted background |
+| "Click Me" label | Floating pill with pulse animation |
+
+---
+
+## Bug Fixes & Iterations
+
+### Round 1 (Initial)
+| # | Issue | Fix |
+|---|---|---|
+| 1 | CopilotKit default CSS too bright | Full CSS rewrite with dark theme, glass effects |
+| 2 | Shared provider caused agent cross-talk | Separate `<CopilotKit>` provider per agent |
+| 3 | Project click didn't auto-trigger detail | Silent `sendMessage()` via `useCopilotChatInternal` |
+| 4 | Secretary persona too technical | Rewrote to non-technical, human-like persona |
+| 5 | `fetchTracksByGenre` missing | Added to musicService.ts |
+| 6 | Agent unaware of user activity | Added user activity tracking log |
+
+### Round 2
+| # | Issue | Fix |
+|---|---|---|
+| 1 | `sendMessage()` API wrong | Switched to `useCopilotChatInternal().sendMessage()` with AG-UI format |
+| 2 | Agents unmounted on navigation | Lifted to App.tsx, always mounted with visibility toggle |
+| 3 | Music search too rigid | Added `searchTracksVector()` with 4-level fallback (vector → full-text → genre → random) |
+
+### Round 3
+| # | Issue | Fix |
+|---|---|---|
+| 1 | Debug/help/icon visible | CSS `display: none` on debug console, help modal, header icon |
+| 2 | Persona still too formal | Further secretary persona refinement |
+| 3 | Project-click message visible in chat | MutationObserver hides `[project-click:...]` messages |
+| 4 | Input text invisible | Fixed `color`, `-webkit-text-fill-color`, `caret-color` on textarea |
+| 5 | Genre labels too long | `shortGenre()` helper for truncation |
+| 6 | Playlist missing delete/play all | PlaylistCard with internal state, delete per track, Play All button |
+| 7 | `display: none` caused textarea bug | Changed to `visibility: hidden` + `pointer-events: none` |
+
+### Round 4 — CV Data Enrichment
+| # | Issue | Fix |
+|---|---|---|
+| 1 | Portfolio data was placeholder | Full rewrite with real data from Meg CV.md |
+| 2 | Missing 5 projects from my CV.md | Added Education Platform, Contract Mgmt, Vehicle Lending, Document Approval, Copilot Studio |
+| 3 | Wrong employers | Fixed: Education Platform → Varkey Education, rest → Freelancer |
+| 4 | Empty client/location crashed | `.filter(Boolean).join(' · ')` for graceful handling |
+| 5 | No resume download | Added `downloadResume` action + resume button in Hero.tsx |
+| 6 | PL-200 missing | Added alongside PL-400, side-by-side cert cards |
+
+### Round 5 — Music Agent UX
+| # | Issue | Fix |
+|---|---|---|
+| 1 | Name was "DJ Meg" | Renamed to "Meg Sound" everywhere |
+| 2 | Chat at bottom-right | Moved to top-right via CSS |
+| 3 | No AI icon | Custom SVG play icon with purple gradient |
+| 4 | Idle auto-play was silent | Changed to auto-open chat + genre picker with 2-min timeout |
+| 5 | Genre options hardcoded | Dynamic from DB via `fetchDistinctGenres()`, shuffled, limited to 5 |
+| 6 | Genre picker click closed chat | Fixed `clickOutsideToClose={!showGenrePicker}` |
+| 7 | "Click Me" label not visible | Changed from CSS `::before` pseudo-element to real DOM element |
+| 8 | Genre picker stayed when typing | Added input/focus listener to auto-dismiss |
+| 9 | Playlist card showed previous tracks | Stored results in refs (`lastSearchResultRef`) instead of reading stale `playerState.playlist` |
+| 10 | Initial message too long | Shortened to "Hey! 🎵 Wanna hear some sound? Type a vibe, genre, or mood..." |
+
+---
+
+## Deployment
+
+### GitHub Actions Workflow
+The workflow at `.github/workflows/azure-static-web-apps-polite-dune-07f36da0f.yml` deploys to Azure Static Web Apps on push to `main`.
+
+### Required GitHub Secrets
+| Secret | Purpose |
+|---|---|
+| `AZURE_STATIC_WEB_APPS_API_TOKEN_POLITE_DUNE_07F36DA0F` | Azure SWA deployment token (existing) |
+| `VITE_SUPABASE_URL` | Supabase project URL (existing) |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anon key (existing) |
+| `VITE_COPILOTKIT_PUBLIC_API_KEY` | **NEW** — CopilotKit public API key from Copilot Cloud |
+
+### Deploy Steps
+1. Add `VITE_COPILOTKIT_PUBLIC_API_KEY` secret in GitHub repo settings
+2. Merge `meg` branch into `main`
+3. Push to `main` → GitHub Actions auto-deploys
+
+### Key Files Changed
+| File | Changes |
+|---|---|
+| `Src/src/components/PortfolioAgent.tsx` | **NEW** — ~695 lines, full portfolio agent |
+| `Src/src/components/MusicAgent.tsx` | **NEW** — ~713 lines, full music agent |
+| `Src/src/App.tsx` | Agent mounting, routing, visibility toggle |
+| `Src/src/App.css` | ~1880 lines total — CopilotKit theme, music-chat, portfolio-chat |
+| `Src/src/main.tsx` | CopilotKit CSS import |
+| `Src/src/services/musicService.ts` | `searchTracksVector`, `fetchDistinctGenres`, `fetchTracksByGenre` |
+| `Src/src/components/Hero.tsx` | Resume download button |
+| `Src/src/components/About.tsx` | Real CV data, 19+ projects stat |
+| `Src/src/components/Experience.tsx` | 19 projects grouped by 4 employers |
+| `Src/src/components/Skills.tsx` | Real skill categories from CV |
+| `Src/src/components/Certifications.tsx` | PL-400 + PL-200 side by side |
+| `Src/package.json` | Added `@copilotkit/react-core`, `@copilotkit/react-ui` |
+| `.github/workflows/*.yml` | Added `VITE_COPILOTKIT_PUBLIC_API_KEY` env |
