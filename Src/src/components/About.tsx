@@ -87,8 +87,9 @@ const About = () => {
               <p>
                 Core expertise in D365 CE (CRM), Power Apps, Power Automate, Power Pages,
                 Power BI, Dataverse, and Copilot Studio. From Fresher to Senior in D365
-                CRM at FPT Software, now at Swiss Post working on Power Platform
-                governance, citizen development, and AI integration.
+                CRM at FPT Software, completed a tenure at Swiss Post (Nov 2022 – Dec 2024) on Power Platform
+                governance, citizen development, and AI integration. Now at Varkey Education
+                working on an enterprise education platform.
               </p>
               <p>
                 Current Goal: Power Platform Scale, Governance, and Leadership — combined

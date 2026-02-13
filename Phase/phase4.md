@@ -19,7 +19,8 @@
 6. [Feature 2 — Music Agent (Meg Sound)](#feature-2--music-agent-meg-sound)
 7. [Styling & Theme](#styling--theme)
 8. [Bug Fixes & Iterations](#bug-fixes--iterations)
-9. [Deployment](#deployment)
+9. [Vector Search Architecture](#vector-search-architecture)
+10. [Deployment](#deployment)
 
 ---
 
@@ -30,7 +31,7 @@ Phase 4 adds **two AI agent chat experiences** powered by CopilotKit + Copilot C
 | Feature | Page | What It Does |
 |---------|------|-------------|
 | **Portfolio Agent** | `/` | AI secretary chat where visitors ask about Meg's skills, projects, certifications. Responses stream with Generative UI cards. Detects click on project cards and proactively shares details. Includes resume download action. |
-| **Meg Sound** (Music Agent) | `/music` | Floating AI music assistant positioned at top-right. Takes playback commands, generates playlists by genre/mood via vector search, auto-opens with genre picker after 2 minutes idle, recommends similar tracks. |
+| **Meg Sound** (Music Agent) | `/music` | Floating AI music assistant positioned at top-right. Takes playback commands, generates playlists by genre/mood via **natural-language vector search** (Supabase Edge Function → OpenAI embeddings → pgvector), auto-opens with genre picker after 2 minutes idle, recommends similar tracks. |
 
 ### What Changed from Phase 3
 
@@ -39,7 +40,7 @@ Phase 4 adds **two AI agent chat experiences** powered by CopilotKit + Copilot C
 | Static portfolio sections | Agent-powered interactive Q&A with Generative UI cards |
 | Manual music browsing only | Text commands for playback control + vector search |
 | No idle detection | 2-min idle auto-open chat with dynamic genre picker |
-| No recommendations | AI-driven playlist generation by genre/mood (pgvector) |
+| No recommendations | AI-driven playlist generation by natural language (OpenAI embeddings + pgvector cosine similarity) |
 | No project card interactivity beyond display | Click triggers agent context about that project |
 | No resume download | Resume download action with Generative UI button |
 | Basic CV data | Full real CV data from Meg CV.md + my CV.md (19 projects, 4 employers) |
@@ -55,6 +56,9 @@ Phase 4 adds **two AI agent chat experiences** powered by CopilotKit + Copilot C
 | LLM Model | Configured via Copilot Cloud dashboard (GPT-4o default, can switch to Azure OpenAI later) |
 | Protocol | AG-UI (Agent↔User Interaction Protocol) |
 | Frontend | React 18 + TypeScript (existing Vite app) |
+| Vector Search | Supabase Edge Function (`smooth-handler`) → OpenAI `text-embedding-3-small` (384 dims) → pgvector cosine similarity |
+| Embedding Model | OpenAI `text-embedding-3-small` with `dimensions: 384` |
+| Vector DB | pgvector extension on Supabase PostgreSQL |
 
 ### How Copilot Cloud Works
 
@@ -235,7 +239,7 @@ Anti-hallucination rules: only reference tracks that exist in provided context.
 | Action | Parameters | Renders | Search Method |
 |---|---|---|---|
 | `controlPlayback` | `command: string` | NowPlayingCard | N/A (PlayerContext) |
-| `searchAndPlayMusic` | `query: string, count?: number` | PlaylistCard | `searchTracksVector()` — 4-level fallback: vector RPC → full-text → genre ilike → random |
+| `searchAndPlayMusic` | `query: string, count?: number` | PlaylistCard | `searchTracksVector()` — natural language vector search via Edge Function, fallback to random |
 | `recommendSimilar` | none | PlaylistCard | `fetchSimilarTracks()` — pgvector similarity |
 
 ### Stale Playlist Fix
@@ -354,6 +358,18 @@ All CopilotKit UI components are styled to match the existing dark agentic theme
 | 9 | Playlist card showed previous tracks | Stored results in refs (`lastSearchResultRef`) instead of reading stale `playerState.playlist` |
 | 10 | Initial message too long | Shortened to "Hey! 🎵 Wanna hear some sound? Type a vibe, genre, or mood..." |
 
+### Round 6 — Vector Search Implementation
+| # | Issue | Fix |
+|---|---|---|
+| 1 | `search_tracks_by_text` RPC returned 404 | Supabase `ai` extension not available on Free plan; switched to Edge Function + OpenAI API approach |
+| 2 | Edge Function CORS error (500) | Used `fetch()` instead of OpenAI SDK import; added CORS headers on all responses including errors |
+| 3 | Edge Function name mismatch | Changed from `search-music` to `smooth-handler` to match deployed function name |
+| 4 | `match_tracks` RPC not found | Created SQL function in Supabase with `security definer` + grants to anon/authenticated/service_role |
+| 5 | Vector dimension mismatch (384 vs 1536) | Updated SQL function to `vector(384)` + added `dimensions: 384` to OpenAI embedding request |
+| 6 | Two round-trips (IDs then full rows) | Updated `match_tracks` to return full track rows directly |
+| 7 | Repeated queries hit OpenAI every time | Added in-memory cache (`Map`) with 5-minute TTL |
+| 8 | Text fallback chain unnecessary | Removed ilike/tag/genre fallbacks — vector-only search with random fallback |
+
 ---
 
 ## Deployment
@@ -374,6 +390,101 @@ The workflow at `.github/workflows/azure-static-web-apps-polite-dune-07f36da0f.y
 2. Merge `meg` branch into `main`
 3. Push to `main` → GitHub Actions auto-deploys
 
+---
+
+## Vector Search Architecture
+
+### Overview
+All music search is **natural language only** — no text-based fallback chains. User queries like "dark phonk bass heavy" or "something chill to vibe to" are converted to vector embeddings and matched against track embeddings using cosine similarity.
+
+### Pipeline
+```
+User types query (e.g., "chill lofi")
+  → Frontend calls searchTracksVector()
+    → supabase.functions.invoke('smooth-handler', { query, count })
+      → Edge Function calls OpenAI text-embedding-3-small (384 dims)
+        → Returns 384-dim vector
+      → Edge Function calls match_tracks RPC with query vector
+        → pgvector cosine similarity (1 - embedding <=> query_embedding)
+        → Returns full track rows sorted by similarity
+      → Frontend maps rows to MusicTrack[], starts playback
+```
+
+### Supabase Setup
+
+#### 1. Extensions (SQL Editor)
+```sql
+create extension if not exists vector with schema extensions;
+```
+
+#### 2. Embedding Column
+```sql
+alter table tracks add column if not exists embedding vector(384);
+```
+
+#### 3. SQL Function — `match_tracks`
+Returns **full track rows** (not just IDs) to eliminate a second round-trip:
+```sql
+create or replace function match_tracks(
+  query_embedding vector(384),
+  match_count int default 6
+)
+returns table (
+  id uuid, title text, artist text, genre text,
+  duration text, color text, tags text[],
+  audio_path text, image_path text, play_count int,
+  similarity float4
+)
+language plpgsql security definer
+as $$
+begin
+  return query
+    select t.id, t.title, t.artist, t.genre, t.duration, t.color,
+           t.tags, t.audio_path, t.image_path, t.play_count,
+           (1 - (t.embedding <=> query_embedding))::float4 as similarity
+    from tracks t
+    where t.embedding is not null
+    order by t.embedding <=> query_embedding
+    limit match_count;
+end;
+$$;
+```
+
+#### 4. Edge Function — `smooth-handler`
+- **URL:** `https://<project>.supabase.co/functions/v1/smooth-handler`
+- **Runtime:** Deno (Supabase Edge Functions)
+- **Secrets required:** `OPENAI_API_KEY` (set in Supabase Dashboard → Edge Functions → Secrets)
+- **Auto-available:** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+- Calls OpenAI `/v1/embeddings` with `model: text-embedding-3-small`, `dimensions: 384`
+- Calls `match_tracks` RPC with the resulting vector
+- Returns full track rows with CORS headers
+
+#### 5. Populating Embeddings
+Track embeddings are generated using OpenAI `text-embedding-3-small` by combining: `title + artist + genre + tags` into a single text string. Can be populated:
+- **Manually** — paste vectors into the `embedding` column
+- **Script** — Node.js script calling OpenAI API + Supabase update
+- **Trigger** — auto-generate on insert/update via `generate_track_embedding()` trigger function
+
+### Frontend Implementation
+
+| Feature | Detail |
+|---------|--------|
+| **Function** | `searchTracksVector(query, count)` in `musicService.ts` |
+| **Cache** | In-memory `Map` with 5-minute TTL — instant response for repeated queries |
+| **Single round-trip** | Edge Function returns full track rows (no second `.select('*')` needed) |
+| **Fallback** | Random tracks only (if Edge Function unavailable) |
+| **Offline** | Fuzzy text search across title/artist/genre/tags when Supabase not configured |
+
+### Performance Optimizations
+| Optimization | Impact |
+|-------------|--------|
+| `match_tracks` returns full rows | Eliminates 1 round-trip (~200-400ms saved) |
+| In-memory cache (5 min TTL) | Instant response for repeat queries (~1-2s saved) |
+| `dimensions: 384` (not 1536) | Smaller vectors = faster cosine distance computation |
+| Vector-only search (no text fallback) | Simpler code path, single API call |
+
+---
+
 ### Key Files Changed
 | File | Changes |
 |---|---|
@@ -382,7 +493,7 @@ The workflow at `.github/workflows/azure-static-web-apps-polite-dune-07f36da0f.y
 | `Src/src/App.tsx` | Agent mounting, routing, visibility toggle |
 | `Src/src/App.css` | ~1880 lines total — CopilotKit theme, music-chat, portfolio-chat |
 | `Src/src/main.tsx` | CopilotKit CSS import |
-| `Src/src/services/musicService.ts` | `searchTracksVector`, `fetchDistinctGenres`, `fetchTracksByGenre` |
+| `Src/src/services/musicService.ts` | `searchTracksVector` (vector-only via Edge Function + cache), `fetchDistinctGenres`, `fetchTracksByGenre` |
 | `Src/src/components/Hero.tsx` | Resume download button |
 | `Src/src/components/About.tsx` | Real CV data, 19+ projects stat |
 | `Src/src/components/Experience.tsx` | 19 projects grouped by 4 employers |

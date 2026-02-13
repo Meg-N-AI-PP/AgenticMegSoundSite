@@ -31,18 +31,18 @@ const aboutData = {
 
 const employmentData = [
   {
-    employer: 'Swiss Post',
-    role: 'Power Platform',
-    period: 'Nov 2022 – Present',
-    location: 'Switzerland',
-    summary: 'Work on customer projects with Power Platform components. CoE Solution maintenance and ALM. Admin governance for Power Platform scale. Support. Research and contribute ideas to scale Power Platform for everyone. AI research within Power Platform, Python, ML and deep learning.',
-  },
-  {
     employer: 'Varkey Education',
     role: 'Senior Power Platform & D365 CRM Developer',
     period: 'Current / Ongoing',
     location: '',
     summary: 'Large-scale education platform where D365 CRM (CE) and Dataverse act as the central system of record and integration layer. Designed CRM entities, built model-driven and canvas apps, developed Power Pages, and prepared CRM data for future agentic AI extensions.',
+  },
+  {
+    employer: 'Swiss Post',
+    role: 'Power Platform',
+    period: 'Nov 2022 – Dec 2024',
+    location: 'Switzerland',
+    summary: 'Worked on customer projects with Power Platform components. CoE Solution maintenance and ALM. Admin governance for Power Platform scale. Support. Joined and researched, contributed ideas to scale Power Platform to everyone in the company. Researched AI tech to include within Power Platform; found chances to work with Python, ML, and deep learning. All projects completed.',
   },
   {
     employer: 'Freelancer',
@@ -85,8 +85,8 @@ const projectsData = [
     title: 'Power Platform Governance & Development',
     employer: 'Swiss Post',
     client: 'Switzerland',
-    period: 'Ongoing',
-    status: 'Current',
+    period: 'Completed',
+    status: 'Completed',
     technologies: ['Power Apps', 'Power Automate', 'Dataverse', 'CoE', 'Azure DevOps', 'CI/CD', 'ALM Accelerator'],
     description: 'Governance, CoE solutions, ALM Accelerator, CI/CD pipelines, and admin support for Power Platform scale.',
     highlights: ['Maintained and upgraded Center of Excellence (CoE) solutions', 'Implemented CI/CD processes in Power Platform Hub', 'Primary support for ALM Accelerator (CI/CD ALM for makers)', 'Developed Power Platform governance and compliance processes', 'Managed CI/CD deployments across various environments', 'Collaborated in agile Power Platform fusion team'],
@@ -95,8 +95,8 @@ const projectsData = [
     title: 'Power Platform Hub Development',
     employer: 'Swiss Post',
     client: 'Switzerland',
-    period: 'Ongoing',
-    status: 'Current',
+    period: 'Completed',
+    status: 'Completed',
     technologies: ['Power Apps (Model-Driven)', 'Power Automate', 'Dataverse', 'SharePoint', 'Azure AI (LLM)', 'CI/CD'],
     description: 'Centralized Hub site for Power Platform information, news, documents, tools, CI/CD, and AI capabilities.',
     highlights: ['Planned and designed Hub architecture', 'Implemented news, document management, custom CI/CD tools, and AI capabilities', 'Integrated Azure AI services (LLMs)', 'Managed CI/CD deployments to various environments'],
@@ -105,8 +105,8 @@ const projectsData = [
     title: 'Power Platform Citizen Projects',
     employer: 'Swiss Post',
     client: 'Switzerland',
-    period: 'Ongoing',
-    status: 'Current',
+    period: 'Completed',
+    status: 'Completed',
     technologies: ['Power Apps', 'Power Automate', 'SharePoint', 'CI/CD'],
     description: 'Multiple applications for the Citizen Developer community: App Catalog, News App, Community Requests, Hub Portal, Idea Management, Compliance App.',
     highlights: ['Developed App Catalog, News App, Community Requests, Hub Portal, Idea Management, Compliance App', 'Managed deployment using CI/CD practices', 'Provided technical guidance and support'],
@@ -125,8 +125,8 @@ const projectsData = [
     title: 'Vehicle Cost Negotiation App',
     employer: 'Swiss Post',
     client: 'Switzerland',
-    period: 'Ongoing',
-    status: 'Current',
+    period: 'Completed',
+    status: 'Completed',
     technologies: ['Power Apps', 'Power Automate', 'Dataverse', 'SharePoint', 'CI/CD'],
     description: 'App for negotiating vehicle costs and agreements with vendors — maintenance, insurance, lending costs.',
     highlights: ['Developed app screens and Dataverse configuration', 'Consulted on field calculations for entities', 'Set up and managed CI/CD pipelines'],
@@ -500,7 +500,7 @@ function PortfolioAgentInner({ activeProject, clickedProject }: PortfolioAgentPr
   });
 
   useCopilotReadable({
-    description: 'Employment history — FPT Software (2018-2022), Swiss Post (2022-Present), Varkey Education, and Freelancer',
+    description: 'Employment history — FPT Software (2018-2022), Swiss Post (2022-2025, completed), Varkey Education (current), and Freelancer',
     value: employmentData,
   });
 
@@ -656,8 +656,8 @@ function PortfolioAgentInner({ activeProject, clickedProject }: PortfolioAgentPr
 IMPORTANT CONTEXT:
 - Meg (Hoa Nguyen) has about 8 years of experience in Power Platform — covering Dev, Admin, Trainer, Support, CoE, and Operations.
 - Meg worked at FPT Software (Sep 2018 – Nov 2022) as a Technical Consultant (Fresher to Senior in D365 CE/CRM).
-- Meg currently works at Swiss Post in Switzerland (Nov 2022 – Present) on Power Platform projects, governance, CoE, and AI research.
-- Meg works as Senior Power Platform & D365 CRM Developer for Varkey Education on an enterprise education platform.
+- Meg completed work at Swiss Post in Switzerland (Nov 2022 – Dec 2024) on Power Platform projects, governance, CoE, and AI research. All Swiss Post projects are completed.
+- Meg currently works as Senior Power Platform & D365 CRM Developer for Varkey Education on an enterprise education platform. This is Meg's active role.
 - Meg also takes on freelance projects — contract management, vehicle lending, document approval, and Copilot Studio consulting.
 - Meg has 19+ projects across all employers and holds PL-400 and PL-200 certifications.
 - Meg's current goal: Power Platform Scale / Governance / Lead and Copilot Agents.

@@ -1,0 +1,266 @@
+/* ─── Moving Agent (Walking Sprite) ─── */
+
+.moving-agent-wrapper {
+  position: absolute;
+  z-index: 50;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+  will-change: left, top, transform;
+}
+
+.moving-agent-wrapper:hover {
+  filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.6));
+}
+
+.moving-agent-shadow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 12px;
+  background: radial-gradient(ellipse, rgba(0, 229, 255, 0.35) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.moving-agent-sprite {
+  pointer-events: none;
+}
+
+/* ─── Speech Bubble ─── */
+
+.moving-agent-speech {
+  position: absolute;
+  top: -56px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 10, 30, 0.95);
+  color: #00e5ff;
+  padding: 12px 20px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 24px rgba(0, 229, 255, 0.18);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  pointer-events: none;
+  animation: agentPopIn 0.25s ease-out;
+  backdrop-filter: blur(10px);
+  min-width: 220px;
+  max-width: 320px;
+  width: max-content;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Thinking dots bubble */
+.moving-agent-speech.thinking {
+  padding: 10px 24px;
+}
+
+.thinking-dots .dot {
+  display: inline-block;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #00e5ff;
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+
+.thinking-dots .dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.thinking-dots .dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dotBounce {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+.moving-agent-speech::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(10, 10, 30, 0.95);
+}
+
+@keyframes agentPopIn {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+/* ─── Annoyed State ─── */
+
+.moving-agent-wrapper.annoyed:hover {
+  filter: drop-shadow(0 0 18px rgba(255, 165, 0, 0.5));
+}
+
+.moving-agent-speech.annoyed {
+  color: #ffaa00;
+  border-color: rgba(255, 165, 0, 0.4);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 24px rgba(255, 165, 0, 0.15);
+}
+
+.moving-agent-speech.annoyed::after {
+  border-top-color: rgba(10, 10, 30, 0.95);
+}
+
+/* ─── Aggressive State ─── */
+
+.moving-agent-wrapper.aggressive:hover {
+  filter: drop-shadow(0 0 22px rgba(255, 50, 50, 0.6));
+  animation: agentShake 0.4s ease-in-out infinite;
+}
+
+.moving-agent-speech.aggressive {
+  color: #ff4444;
+  border-color: rgba(255, 50, 50, 0.5);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(255, 50, 50, 0.25);
+  background: rgba(20, 5, 5, 0.95);
+}
+
+.moving-agent-speech.aggressive::after {
+  border-top-color: rgba(20, 5, 5, 0.95);
+}
+
+.moving-agent-speech.aggressive .thinking-dots .dot {
+  color: #ff4444;
+}
+
+@keyframes agentShake {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(-2deg); }
+  75% { transform: translate(-50%, -50%) rotate(2deg); }
+}
+
+/* ─── Min Agent Chat ─── */
+
+.min-agent-chat {
+  position: fixed;
+  z-index: 10000;
+}
+
+/* Override CopilotKit popup positioning to center */
+.min-agent-chat .copilotKitPopup,
+.min-agent-chat.copilotKitPopup {
+  position: fixed !important;
+  z-index: 10000 !important;
+}
+
+.min-agent-chat .copilotKitWindow,
+.min-agent-chat.copilotKitPopup .copilotKitWindow {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  bottom: auto !important;
+  right: auto !important;
+  transform: translate(-50%, -50%) !important;
+  width: 28rem !important;
+  max-width: 90vw !important;
+  height: 580px !important;
+  max-height: 80vh !important;
+  border-radius: 20px !important;
+  background: rgba(10, 10, 25, 0.98) !important;
+  border: 1px solid rgba(0, 229, 255, 0.18) !important;
+  box-shadow:
+    0 0 80px rgba(0, 229, 255, 0.12),
+    0 30px 100px rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(24px) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Header */
+.min-agent-chat .copilotKitHeader {
+  background: rgba(12, 12, 30, 0.98) !important;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.12) !important;
+  padding: 14px 20px !important;
+  position: relative !important;
+  min-height: 52px !important;
+}
+
+.min-agent-chat .copilotKitHeader::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00e5ff, #b794f6, transparent);
+  opacity: 0.5;
+}
+
+/* Messages */
+.min-agent-chat .copilotKitMessages {
+  background: rgba(10, 10, 25, 0.98) !important;
+}
+
+.min-agent-chat .copilotKitMessage.copilotKitUserMessage {
+  background: rgba(0, 229, 255, 0.12) !important;
+  border: 1px solid rgba(0, 229, 255, 0.2) !important;
+}
+
+/* Input area */
+.min-agent-chat .copilotKitInput {
+  border-color: rgba(0, 229, 255, 0.15) !important;
+}
+
+.min-agent-chat .copilotKitInput:focus-within {
+  border-color: rgba(0, 229, 255, 0.4) !important;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.1) !important;
+}
+
+/* Send button */
+.min-agent-chat .copilotKitInputControlButton:not([disabled]) {
+  color: #00e5ff !important;
+}
+
+/* Activity dots */
+.min-agent-chat .copilotKitActivityDot {
+  background-color: #00e5ff !important;
+}
+
+/* Trigger button (hidden — we use the sprite click) */
+.min-agent-chat .copilotKitButton {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Backdrop overlay */
+.min-agent-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  animation: backdropFadeIn 0.3s ease;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

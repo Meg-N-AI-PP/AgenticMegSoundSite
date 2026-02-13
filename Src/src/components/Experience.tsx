@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import anime from 'animejs';
 
 const employers = [
-  { name: 'Swiss Post', role: 'Power Platform', period: 'Nov 2022 – Present', location: 'Switzerland', color: '#00e676' },
   { name: 'Varkey Education', role: 'Senior Power Platform & D365 CRM Developer', period: 'Current / Ongoing', location: '', color: '#ff6b35' },
+  { name: 'Swiss Post', role: 'Power Platform', period: 'Nov 2022 – Dec 2024', location: 'Switzerland', color: '#00e676' },
   { name: 'Freelancer', role: 'Power Platform Developer', period: '', location: '', color: '#b794f6' },
   { name: 'FPT Software', role: 'Technical Consultant', period: 'Sep 2018 – Nov 2022', location: 'Ho Chi Minh', color: '#00e5ff' },
 ];
@@ -13,9 +13,9 @@ const projects = [
   {
     title: 'Power Platform Governance & Development',
     employer: 'Swiss Post',
-    status: 'Current',
-    statusColor: '#00e676',
-    period: 'Ongoing',
+    status: 'Completed',
+    statusColor: '#00e5ff',
+    period: 'Completed',
     client: 'Switzerland',
     technologies: ['Power Apps', 'Power Automate', 'Dataverse', 'CoE', 'Azure DevOps', 'CI/CD'],
     description: 'Governance, CoE solutions, ALM Accelerator, CI/CD pipelines, and admin support for Power Platform scale.',
@@ -29,9 +29,9 @@ const projects = [
   {
     title: 'Power Platform Hub Development',
     employer: 'Swiss Post',
-    status: 'Current',
-    statusColor: '#00e676',
-    period: 'Ongoing',
+    status: 'Completed',
+    statusColor: '#00e5ff',
+    period: 'Completed',
     client: 'Switzerland',
     technologies: ['Power Apps (Model-Driven)', 'Dataverse', 'Azure AI (LLM)', 'CI/CD'],
     description: 'Centralized Hub site for Power Platform information, news, documents, tools, CI/CD, and AI capabilities.',
@@ -44,9 +44,9 @@ const projects = [
   {
     title: 'Power Platform Citizen Projects',
     employer: 'Swiss Post',
-    status: 'Current',
-    statusColor: '#00e676',
-    period: 'Ongoing',
+    status: 'Completed',
+    statusColor: '#00e5ff',
+    period: 'Completed',
     client: 'Switzerland',
     technologies: ['Power Apps', 'Power Automate', 'SharePoint', 'CI/CD'],
     description: 'Multiple apps for the Citizen Developer community: App Catalog, News App, Community Requests, Hub Portal, Idea Management, Compliance App.',
@@ -74,9 +74,9 @@ const projects = [
   {
     title: 'Vehicle Cost Negotiation App',
     employer: 'Swiss Post',
-    status: 'Current',
-    statusColor: '#00e676',
-    period: 'Ongoing',
+    status: 'Completed',
+    statusColor: '#00e5ff',
+    period: 'Completed',
     client: 'Switzerland',
     technologies: ['Power Apps', 'Power Automate', 'Dataverse', 'CI/CD'],
     description: 'App for negotiating vehicle costs and agreements with vendors — maintenance, insurance, lending costs.',
@@ -307,9 +307,234 @@ interface ExperienceProps {
   onProjectClick?: (projectTitle: string) => void;
 }
 
+/* ── Collapsible employer group ── */
+function EmployerGroup({
+  emp,
+  empProjects,
+  isExpanded,
+  onToggle,
+  onProjectHover,
+  onProjectClick,
+}: {
+  emp: typeof employers[0];
+  empProjects: typeof projects;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onProjectHover?: (title: string | null) => void;
+  onProjectClick?: (title: string) => void;
+}) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+  const prevExpanded = useRef(isExpanded);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    // Skip animation on first render — just set initial state
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      if (!isExpanded) {
+        el.style.display = 'none';
+        el.style.height = '0';
+        el.style.opacity = '0';
+      }
+      prevExpanded.current = isExpanded;
+      return;
+    }
+
+    // Skip if state hasn't changed
+    if (prevExpanded.current === isExpanded) return;
+    prevExpanded.current = isExpanded;
+
+    // Stop any running animations on this element
+    anime.remove(el);
+    anime.remove(el.querySelectorAll('.timeline-item'));
+
+    if (isExpanded) {
+      // Expand
+      el.style.display = 'block';
+      el.style.overflow = 'hidden';
+      el.style.height = '0';
+      el.style.opacity = '0';
+
+      // Force reflow so browser registers the 0 height
+      void el.offsetHeight;
+      const fullHeight = el.scrollHeight;
+
+      anime({
+        targets: el,
+        height: [0, fullHeight],
+        opacity: [0, 1],
+        duration: 600,
+        easing: 'easeOutCubic',
+        complete: () => {
+          el.style.height = 'auto';
+          el.style.overflow = '';
+        },
+      });
+
+      // Stagger project cards sliding in
+      anime({
+        targets: el.querySelectorAll('.timeline-item'),
+        opacity: [0, 1],
+        translateX: [-30, 0],
+        delay: anime.stagger(60, { start: 80 }),
+        duration: 500,
+        easing: 'easeOutCubic',
+      });
+    } else {
+      // Collapse
+      el.style.overflow = 'hidden';
+      const currentHeight = el.scrollHeight;
+      el.style.height = currentHeight + 'px';
+
+      anime({
+        targets: el,
+        height: [currentHeight, 0],
+        opacity: [1, 0],
+        duration: 450,
+        easing: 'easeInCubic',
+        complete: () => {
+          el.style.display = 'none';
+        },
+      });
+    }
+  }, [isExpanded]);
+
+  return (
+    <div key={emp.name}>
+      {/* Employer header — clickable toggle */}
+      <div className="timeline-item" style={{ marginBottom: '0' }}>
+        <div className="timeline-marker" style={{ borderColor: emp.color }}>
+          <div className="timeline-marker-inner" style={{ background: emp.color, width: '14px', height: '14px' }}></div>
+        </div>
+        <div
+          className="employer-toggle"
+          onClick={onToggle}
+          style={{
+            padding: '12px 20px',
+            background: `linear-gradient(135deg, ${emp.color}15, transparent)`,
+            border: `1px solid ${emp.color}30`,
+            borderRadius: '12px',
+            flex: 1,
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            userSelect: 'none',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = `${emp.color}60`;
+            (e.currentTarget as HTMLElement).style.transform = 'translateX(4px)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = `${emp.color}30`;
+            (e.currentTarget as HTMLElement).style.transform = 'translateX(0)';
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span
+                className="employer-chevron"
+                style={{
+                  color: emp.color,
+                  fontSize: '14px',
+                  transition: 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                  display: 'inline-block',
+                }}
+              >
+                ▸
+              </span>
+              <div>
+                <h3 style={{ color: emp.color, margin: 0, fontSize: '18px', fontWeight: 700 }}>{emp.name}</h3>
+                <p style={{ color: 'rgba(255,255,255,0.5)', margin: '2px 0 0', fontSize: '13px' }}>
+                  {[emp.role, emp.location].filter(Boolean).join(' · ')}
+                  <span style={{ color: 'rgba(255,255,255,0.3)', marginLeft: '8px', fontSize: '12px' }}>
+                    ({empProjects.length} project{empProjects.length !== 1 ? 's' : ''})
+                  </span>
+                </p>
+              </div>
+            </div>
+            <span style={{ color: emp.color, fontSize: '13px', fontWeight: 600 }}>{emp.period}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Collapsible project list */}
+      <div
+        ref={contentRef}
+        style={{
+          display: isExpanded ? 'block' : 'none',
+          height: isExpanded ? 'auto' : '0',
+          overflow: 'hidden',
+        }}
+      >
+        {empProjects.map((project, i) => (
+          <div key={i} className="timeline-item">
+            <div className="timeline-marker" style={{ borderColor: project.statusColor }}>
+              <div className="timeline-marker-inner" style={{ background: project.statusColor }}></div>
+            </div>
+            <div
+              className="timeline-card"
+              onMouseEnter={() => onProjectHover?.(project.title)}
+              onMouseLeave={() => onProjectHover?.(null)}
+              onClick={() => onProjectClick?.(project.title)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="timeline-card-header">
+                <div>
+                  <h3>{project.title}</h3>
+                  <p className="timeline-role">{[project.client, project.period].filter(Boolean).join(' · ')}</p>
+                </div>
+                <span
+                  className="timeline-status"
+                  style={{ color: project.statusColor, borderColor: project.statusColor }}
+                >
+                  {project.status}
+                </span>
+              </div>
+              <p className="timeline-description">{project.description}</p>
+              <div className="timeline-tech">
+                {project.technologies.map((tech, j) => (
+                  <span key={j} className="tech-tag">{tech}</span>
+                ))}
+              </div>
+              <ul className="timeline-highlights">
+                {project.highlights.map((h, j) => (
+                  <li key={j}>{h}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const Experience = ({ onProjectHover, onProjectClick }: ExperienceProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const hasAnimated = useRef(false);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  const allExpanded = employers.every(e => expandedGroups[e.name]);
+  const anyExpanded = employers.some(e => expandedGroups[e.name]);
+
+  const toggleGroup = useCallback((name: string) => {
+    setExpandedGroups(prev => ({ ...prev, [name]: !prev[name] }));
+  }, []);
+
+  const toggleAll = useCallback(() => {
+    if (anyExpanded) {
+      // Collapse all
+      setExpandedGroups({});
+    } else {
+      // Expand all
+      const all: Record<string, boolean> = {};
+      employers.forEach(e => { all[e.name] = true; });
+      setExpandedGroups(all);
+    }
+  }, [anyExpanded]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -358,74 +583,55 @@ const Experience = ({ onProjectHover, onProjectClick }: ExperienceProps) => {
   return (
     <section className="experience" id="experience" ref={sectionRef}>
       <div className="container">
-        <span className="section-label experience-label">Experience</span>
-        <h2 className="experience-heading">
-          Project <span className="gradient-text">Portfolio</span>
-        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '8px' }}>
+          <div>
+            <span className="section-label experience-label">Experience</span>
+            <h2 className="experience-heading" style={{ marginBottom: '16px' }}>
+              Project <span className="gradient-text">Portfolio</span>
+            </h2>
+          </div>
+          <button
+            className="expand-all-btn"
+            onClick={toggleAll}
+            style={{
+              marginTop: '28px',
+              padding: '8px 20px',
+              background: 'rgba(0, 229, 255, 0.08)',
+              border: '1px solid rgba(0, 229, 255, 0.25)',
+              borderRadius: '8px',
+              color: 'var(--accent-cyan)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              fontFamily: 'var(--font-mono)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              letterSpacing: '0.05em',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'rgba(0, 229, 255, 0.15)';
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0, 229, 255, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'rgba(0, 229, 255, 0.08)';
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0, 229, 255, 0.25)';
+            }}
+          >
+            {anyExpanded ? '⊟ Collapse All' : '⊞ Expand All'}
+          </button>
+        </div>
         <div className="timeline">
           {employers.map((emp) => {
             const empProjects = projects.filter(p => p.employer === emp.name);
             return (
-              <div key={emp.name}>
-                <div className="timeline-item" style={{ marginBottom: '0' }}>
-                  <div className="timeline-marker" style={{ borderColor: emp.color }}>
-                    <div className="timeline-marker-inner" style={{ background: emp.color, width: '14px', height: '14px' }}></div>
-                  </div>
-                  <div style={{
-                    padding: '12px 20px',
-                    background: `linear-gradient(135deg, ${emp.color}15, transparent)`,
-                    border: `1px solid ${emp.color}30`,
-                    borderRadius: '12px',
-                    flex: 1,
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                      <div>
-                        <h3 style={{ color: emp.color, margin: 0, fontSize: '18px', fontWeight: 700 }}>{emp.name}</h3>
-                        <p style={{ color: 'rgba(255,255,255,0.5)', margin: '2px 0 0', fontSize: '13px' }}>{[emp.role, emp.location].filter(Boolean).join(' · ')}</p>
-                      </div>
-                      <span style={{ color: emp.color, fontSize: '13px', fontWeight: 600 }}>{emp.period}</span>
-                    </div>
-                  </div>
-                </div>
-                {empProjects.map((project, i) => (
-                  <div key={i} className="timeline-item">
-                    <div className="timeline-marker" style={{ borderColor: project.statusColor }}>
-                      <div className="timeline-marker-inner" style={{ background: project.statusColor }}></div>
-                    </div>
-                    <div
-                      className="timeline-card"
-                      onMouseEnter={() => onProjectHover?.(project.title)}
-                      onMouseLeave={() => onProjectHover?.(null)}
-                      onClick={() => onProjectClick?.(project.title)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div className="timeline-card-header">
-                        <div>
-                          <h3>{project.title}</h3>
-                          <p className="timeline-role">{[project.client, project.period].filter(Boolean).join(' · ')}</p>
-                        </div>
-                        <span
-                          className="timeline-status"
-                          style={{ color: project.statusColor, borderColor: project.statusColor }}
-                        >
-                          {project.status}
-                        </span>
-                      </div>
-                      <p className="timeline-description">{project.description}</p>
-                      <div className="timeline-tech">
-                        {project.technologies.map((tech, j) => (
-                          <span key={j} className="tech-tag">{tech}</span>
-                        ))}
-                      </div>
-                      <ul className="timeline-highlights">
-                        {project.highlights.map((h, j) => (
-                          <li key={j}>{h}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <EmployerGroup
+                key={emp.name}
+                emp={emp}
+                empProjects={empProjects}
+                isExpanded={!!expandedGroups[emp.name]}
+                onToggle={() => toggleGroup(emp.name)}
+                onProjectHover={onProjectHover}
+                onProjectClick={onProjectClick}
+              />
             );
           })}
         </div>
